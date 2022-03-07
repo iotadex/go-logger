@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -162,7 +163,7 @@ func (l *Logger) Output(level LOGLEVEL, s string) {
 			if ok {
 				buf.WriteString(fmt.Sprintf("[%s:%d:%s]", file, line, runtime.FuncForPC(funcName).Name()))
 			} else {
-				fmt.Println("runtime.Caller error.")
+				log.Println("runtime.Caller error.")
 			}
 		}
 		buf.WriteString(" ")
@@ -207,7 +208,7 @@ func (l *Logger) run() {
 		l.doRotate()
 		_, err := l.out.Write(buf)
 		if err != nil {
-			fmt.Println("Write log error.", err.Error())
+			log.Println("Write log error.", err.Error())
 		}
 	}
 }
@@ -223,7 +224,7 @@ func (l *Logger) doRotate() {
 			ts := time.Now().Format("_2006-01-02_15-04-05")
 			logFile, err := os.OpenFile(p+f+ts+s, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
 			if err != nil {
-				fmt.Println(err.Error())
+				log.Println(err.Error())
 				l.out = os.Stdout
 			} else {
 				l.out = logFile
@@ -234,7 +235,7 @@ func (l *Logger) doRotate() {
 	} else if l.rotate == 2 {
 		info, err := l.file.Stat()
 		if err != nil {
-			fmt.Println("Rotate log error. get file info error. ", err.Error())
+			log.Println("Rotate log error. get file info error. ", err.Error())
 		} else {
 			if info.Size() > l.maxSize {
 				// get next filename
@@ -245,7 +246,7 @@ func (l *Logger) doRotate() {
 					os.Remove(filename)
 					logFile, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
 					if err != nil {
-						fmt.Println(err.Error())
+						log.Println(err.Error())
 						l.out = os.Stdout
 					} else {
 						l.out = logFile
