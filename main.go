@@ -1,8 +1,9 @@
 package main
 
 import (
-	"go-logger/logger"
 	"log"
+
+	"github.com/triplefi/go-logger/logger"
 )
 
 func main() {
