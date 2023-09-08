@@ -37,8 +37,9 @@ var leveName = [4]string{
 
 // Logger information
 type Logger struct {
-	filename  string      // logger file's name : test_2019-06-26_22-53.log. it's filename is 'test.log'
-	file      *os.File    // logger's output file
+	filename  string   // logger file's name : test_2019-06-26_22-53.log. it's filename is 'test.log'
+	file      *os.File // logger's output file
+	level     LOGLEVEL
 	rotate    int         // 1 for date rotate; 2 fro size rotate; 0 for not rotate
 	rDateTime time.Time   // current day
 	rHour     int         // current hour
@@ -82,11 +83,15 @@ func GetPathFileName(fn string) (string, string, string) {
 	return path, file, suffix
 }
 
-// New filename is the full path filename like logs/test.log
-// when rotate is 1 the rDay,rHour,rMinute are used;
+// New filename is the full path filename like ./logs/test.log
+// when rotate is 1 the rHour,rMinute are used;
 // and when rotate is 2 the maxSize of bytes,nRotate are used
-func New(filename string, rotate int, v1 int64, v2 int) (*Logger, error) {
-	l := new(Logger)
+func New(filename string, rotate int, v1 int64, v2 int, level LOGLEVEL) (*Logger, error) {
+	l := &Logger{
+		filename: filename,
+		rotate:   rotate,
+		level:    level,
+	}
 
 	l.filename = filename
 	p, f, s := GetPathFileName(filename)
@@ -140,7 +145,7 @@ func New(filename string, rotate int, v1 int64, v2 int) (*Logger, error) {
 	return l, nil
 }
 
-//SetPrefix set the bPrefix
+// SetPrefix set the bPrefix
 func (l *Logger) SetPrefix(b bool) {
 	l.bPrefix = b
 }
@@ -154,6 +159,9 @@ func (l *Logger) Write(p []byte) (int, error) {
 
 // Output output the s to the Logger's pointer l
 func (l *Logger) Output(level LOGLEVEL, s string) {
+	if level > l.level {
+		return
+	}
 	var buf bytes.Buffer
 	if l.bPrefix {
 		buf.WriteString(time.Now().Format("[2006-01-02 15:04:05]"))
