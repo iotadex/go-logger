@@ -1,24 +1,31 @@
 package main
 
 import (
-	"log"
+	"log/slog"
+	"sync"
+	"time"
 
-	"github.com/triplefi/go-logger/logger"
+	"github.com/triplefi/go-logger/wangyi"
 )
 
 func main() {
-	OutLogger, err := logger.New("out.log", 1, 3, 0, logger.INFO)
-	if err != nil {
-		log.Panic("Create Outlogger file error. " + err.Error())
+
+	slog.SetDefault(wangyi.GetDefaultDailyRotatedLogger("logs/out.log", 0, 0))
+
+	slog.Debug("Debug", "bug", 100000)
+
+	var w sync.WaitGroup
+	w.Add(10)
+	lines := 100000
+	for i := 0; i < 10; i++ {
+		go func(m int) {
+			max := m + lines
+			for n := m; n < max; n++ {
+				slog.Info("Hello", "value", n)
+				time.Sleep(time.Second)
+			}
+			w.Done()
+		}(i * lines)
 	}
-
-	OutLogger.Info("Hello %d", 1)
-
-	//second type log
-	ErrLogger, err := logger.New("err.log", 2, 100, 10, logger.ERROR)
-	if err != nil {
-		log.Panic("Create ErrLogger file error. " + err.Error())
-	}
-
-	ErrLogger.Error("Hello %d", 1)
+	w.Wait()
 }
