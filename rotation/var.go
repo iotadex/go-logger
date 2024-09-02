@@ -1,4 +1,4 @@
-package wangyi
+package rotation
 
 import "log/slog"
 

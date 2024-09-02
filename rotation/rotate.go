@@ -1,5 +1,5 @@
 // Package wangyi provides a list of unit tools.
-package wangyi
+package rotation
 
 import (
 	"io"
@@ -111,8 +111,10 @@ func NewSizeRotatedLogger(filename string, size int64, number int) (*Logger, err
 	}
 
 	l.fnRotate = make([]string, l.rMaxNum)
+	l.fnRotateUsed = make([]bool, l.rMaxNum)
 	for i := 0; i < l.rMaxNum; i++ {
 		l.fnRotate[i] = path + fn + strconv.Itoa(i) + suffix
+		l.fnRotateUsed[i] = false
 	}
 
 	l.file, err = l.openNewSizeFile()

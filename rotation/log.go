@@ -1,8 +1,8 @@
-package wangyi
+package rotation
 
 import "log/slog"
 
-func GetDefaultDailyRotatedLogger(filename string, h, m int) *slog.Logger {
+func GetDefaultDailyLogger(filename string, h, m int) *slog.Logger {
 	fileLog, err := NewDailyRotatedLogger("logs/out.log", h, m)
 	if err != nil {
 		panic(err)
@@ -16,7 +16,7 @@ func GetDefaultDailyRotatedLogger(filename string, h, m int) *slog.Logger {
 	return slog.New(NewDefaultHandler(fileLog, &opts))
 }
 
-func GetDefaultSizeRotatedLogger(filename string, size int64, number int) *slog.Logger {
+func GetDefaultSizeLogger(filename string, size int64, number int) *slog.Logger {
 	fileLog, err := NewSizeRotatedLogger("logs/out.log", size, number)
 	if err != nil {
 		panic(err)

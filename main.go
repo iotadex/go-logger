@@ -5,12 +5,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/triplefi/go-logger/wangyi"
+	"github.com/triplefi/go-logger/rotation"
 )
 
 func main() {
-
-	slog.SetDefault(wangyi.GetDefaultDailyRotatedLogger("logs/out.log", 0, 0))
+	slog.SetDefault(rotation.GetDefaultSizeLogger("logs/out.log", 1024, 10))
 
 	slog.Debug("Debug", "bug", 100000)
 
